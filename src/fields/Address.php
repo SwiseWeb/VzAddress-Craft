@@ -118,6 +118,8 @@ class Address extends Field
     {
         if (is_string($value) && !empty($value)) {
             $value = Json::decode($value);
+        } else if(empty($value)) {
+            return new AddressModel();
         }
 
         // For backwards compatibility with VZ Address 1.x
@@ -125,8 +127,9 @@ class Address extends Field
             unset($value['__model__']);
         }
 
-        $model = new AddressModel($value);
-        return $model;
+        // If the value is an array, we can use that to create a new Address model, otherwise try to convert the model to an array
+        $value = is_array($value) ? $value : ($value->toArray() ?? []);
+        return new AddressModel($value);
     }
 
     /**
